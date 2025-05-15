@@ -1,0 +1,554 @@
+# 通用图片生成 MCP 服务器需求文档
+
+## 1. 项目概述
+
+### 1.1 项目目标
+开发一个基于大模型图片生成MCP服务器，主要服务于《 为6 岁儿童讲解计算机原理》项目的图片需求，同时保持足够的通用性以支持其他项目使用。通过精心设计的提示词模板，确保生成图片的风格统一性和质量。
+
+### 1.2 核心价值
+- **通用性**：支持各类图片生成需求
+- **一致性**：通过提示词模板确保风格统一
+- **易用性**：简单清晰的接口设计
+- **高质量**：支持标准和HD质量输出
+
+## 2. 功能需求
+
+### 2.1 基础功能
+1. **图片生成接口**
+   - 单一主接口：`generate_image`
+
+2. **模板管理接口**
+   - 获取模板列表：`list_templates`
+   - 获取模板详情：`get_template`
+
+3. **提示词增强系统**
+   - GPT-4 提示词重写优化
+   - 插图模板定义
+   - 概念图模板定义
+
+4. **日志记录**
+   - 记录请求和接口调用的情况
+
+5. **错误处理**
+   - 能够返回友好的错误提示
+   - 错误重试机制
+
+### 2.2 接口参数
+1. **generate_image**
+```json
+{
+  "prompt": {
+    "text": "图片描述文本",
+    "template": {
+      "template_id": "string",
+      "override": {
+        "style": {
+          "art_style": "cartoon|realistic|minimal|technical",
+          "color_theme": {
+            "primary": ["string"],
+            "secondary": ["string"],
+            "background": ["string"],
+            "emphasis": ["string"]
+          },
+          "composition": {
+            "layout": "centered|flow|balanced",
+            "perspective": "2d|front_facing|isometric",
+            "depth": "flat|simple|complex"
+          }
+        },
+        "elements": {
+          "main": {
+            "style": "cartoon|realistic|minimal|technical",
+            "complexity": "low|medium|high",
+            "emphasis_level": "subtle|medium|strong"
+          },
+          "supporting": {
+            "annotations": boolean,
+            "labels": boolean,
+            "arrows": boolean,
+            "icons": boolean
+          },
+          "text": {
+            "font_style": "sans_serif|serif|monospace",
+            "size_scale": "small|medium|large",
+            "weight": "light|regular|medium|bold"
+          }
+        }
+      }
+    }
+  },
+  "options": {
+    "size": {
+      "width": 1024,
+      "height": 1024
+    },
+    "quality": "standard|hd",
+    "style": "natural|vivid",
+    "response_format": "url|b64_json"
+  },
+  "metadata": {
+    "category": "illustration|concept|diagram",
+    "name": "string",
+    "tags": ["string"],
+    "user": "string"
+  }
+}
+```
+
+2. **list_templates**
+```json
+{
+  "request": {
+    "type": "illustration|concept|diagram|all",
+    "page": {
+      "size": "number",
+      "number": "number"
+    }
+  },
+  "response": {
+    "total": "number",
+    "templates": [
+      {
+        "template_id": "string",
+        "name": "string",
+        "description": "string",
+        "version": "string",
+        "type": "illustration|concept|diagram",
+        "thumbnail": "string",
+        "created_at": "string",
+        "updated_at": "string"
+      }
+    ],
+    "pagination": {
+      "current_page": "number",
+      "total_pages": "number",
+      "has_next": "boolean"
+    }
+  }
+}
+```
+
+3. **get_template**
+```json
+{
+  "request": {
+    "template_id": "string"
+  },
+  "response": {
+    "template_id": "string",
+    "name": "string",
+    "description": "string",
+    "version": "string",
+    "type": "illustration|concept|diagram",
+    "thumbnail": "string",
+    "created_at": "string",
+    "updated_at": "string",
+    "style": {
+      "art_style": "cartoon|realistic|minimal|technical",
+      "color_theme": {
+        "primary": ["string"],
+        "secondary": ["string"],
+        "background": ["string"],
+        "emphasis": ["string"]
+      },
+      "composition": {
+        "layout": "centered|flow|balanced",
+        "perspective": "2d|front_facing|isometric",
+        "depth": "flat|simple|complex"
+      }
+    },
+    "elements": {
+      "main": {
+        "style": "cartoon|realistic|minimal|technical",
+        "complexity": "low|medium|high",
+        "emphasis_level": "subtle|medium|strong"
+      },
+      "supporting": {
+        "annotations": boolean,
+        "labels": boolean,
+        "arrows": boolean,
+        "icons": boolean
+      },
+      "text": {
+        "font_style": "sans_serif|serif|monospace",
+        "size_scale": "small|medium|large",
+        "weight": "light|regular|medium|bold"
+      }
+    },
+    "example_images": [
+      {
+        "url": "string",
+        "prompt": "string",
+        "override": "object"
+      }
+    ]
+  }
+}
+```
+
+### 2.3 模板与提示词关联机制
+
+1. **模板应用流程**
+```mermaid
+graph TD
+    A[用户输入] --> B[加载基础模板]
+    B --> C[应用覆盖参数]
+    C --> D[生成完整提示词]
+    D --> E[调用AI接口]
+```
+
+2. **使用示例**
+```json
+// 请求示例：生成概念图
+{
+  "prompt": {
+    "text": "解释CPU如何处理简单的1+1运算",
+    "template": {
+      "id": "concept_v1",
+      "override": {
+        "style": {
+          "art_style": "minimal",
+          "color_theme": {
+            "primary": ["#2196F3"]
+          }
+        },
+        "elements": {
+          "main": {
+            "complexity": "low",
+            "emphasis_level": "strong"
+          },
+          "supporting": {
+            "annotations": true,
+            "arrows": true
+          }
+        }
+      }
+    }
+  },
+  "options": {
+    "size": {
+      "width": 1024,
+      "height": 1024
+    },
+    "response_format": "url"
+  },
+  "metadata": {
+    "category": "concept",
+    "name": "CPU_addition_concept",
+    "tags": ["computer_science", "arithmetic", "cpu"],
+    "user": "user123"
+  }
+}
+
+// 请求示例：生成插图
+{
+  "prompt": {
+    "text": "一只可爱的小猫在玩毛线球",
+    "template": {
+      "id": "illustration_v1",
+      "override": {
+        "style": {
+          "art_style": "cartoon",
+          "color_theme": {
+            "primary": ["#FF69B4"],
+            "emphasis": ["#FF5722"]
+          }
+        },
+        "elements": {
+          "main": {
+            "style": "cartoon",
+            "complexity": "medium"
+          },
+          "supporting": {
+            "annotations": false,
+            "icons": true
+          }
+        }
+      }
+    }
+  },
+  "options": {
+    "size": {
+      "width": 1024,
+      "height": 1024
+    },
+    "response_format": "url"
+  },
+  "metadata": {
+    "category": "illustration",
+    "name": "playful_cat",
+    "tags": ["animal", "cat", "cute"],
+    "user": "user123"
+  }
+}
+```
+
+### 2.4 图片规格说明
+1. **支持尺寸**
+   - 1024x1024 (正方形)
+   - 1792x1024 (横向)
+   - 1024x1792 (纵向)
+
+2. **质量等级**
+   - standard: 标准质量
+   - hd: 高清质量，更细致的细节和更好的一致性
+
+3. **风格选项**
+   - natural: 自然风格，更接近真实照片
+   - vivid: 生动风格，偏向戏剧化和超现实效果
+
+### 2.5 技术规范
+1. **API集成**
+   - 使用 litellm 调用模型接口生成图片
+   - 对 Openai的模型接口进行适配
+   - 留有对其他模型接口适配的扩展性
+
+2. **MCP Server 配置**
+   ```json
+   {
+     "mcpServers": {
+       "gen-image": {
+         "command": "npx",
+         "args": [
+           "-y",
+           "--package=gen-image-mcp",
+           "gen-image-mcp",
+           "--storage-path=/path/to/images",
+           "--provider=openrouter",
+           "--model=anthropic/claude-3-opus"
+         ],
+         "env": {
+           "OPENROUTER_API_KEY": "your-api-key",
+           "XAI_API_KEY": "your-api-key"
+         }
+       }
+     }
+   }
+   ```
+
+3. **存储系统**
+   - 本地文件系统存储
+   - 存储路径通过 MCP Server 启动参数配置
+   - 图片文件名按照提示词和时间自动生成
+   ```
+   # 存储路径配置示例
+   --storage-path=/path/to/images
+   ```
+
+### 2.6 统一模板系统
+
+1. **通用模板结构**
+```json
+{
+  "template_id": "string",
+  "name": "string",
+  "description": "string",
+  "version": "string",
+  "type": "illustration|concept|diagram",
+  
+  "style": {
+    "art_style": "cartoon|realistic|minimal|technical",
+    "color_theme": {
+      "primary": ["string"],
+      "secondary": ["string"],
+      "background": ["string"],
+      "emphasis": ["string"]
+    },
+    "composition": {
+      "layout": "centered|flow|balanced",
+      "perspective": "2d|front_facing|isometric",
+      "depth": "flat|simple|complex"
+    }
+  },
+
+  "elements": {
+    "main": {
+      "style": "cartoon|realistic|minimal|technical",
+      "complexity": "low|medium|high",
+      "emphasis_level": "subtle|medium|strong"
+    },
+    "supporting": {
+      "annotations": boolean,
+      "labels": boolean,
+      "arrows": boolean,
+      "icons": boolean
+    },
+    "text": {
+      "font_style": "sans_serif|serif|monospace",
+      "size_scale": "small|medium|large",
+      "weight": "light|regular|medium|bold"
+    }
+  }
+}
+```
+
+2. **基础模板示例：插图**
+```json
+{
+  "template_id": "illustration_v1",
+  "name": "基础插图风格",
+  "description": "通用卡通插图风格",
+  "version": "1.0.0",
+  "type": "illustration",
+  
+  "style": {
+    "art_style": "cartoon",
+    "color_theme": {
+      "primary": ["#FFD700", "#FF6B6B"],
+      "secondary": ["#4ECDC4", "#45B7D1"],
+      "background": ["#FFFFFF", "#F8F9FA"],
+      "emphasis": ["#FF5722"]
+    },
+    "composition": {
+      "layout": "centered",
+      "perspective": "front_facing",
+      "depth": "simple"
+    }
+  },
+
+  "elements": {
+    "main": {
+      "style": "cartoon",
+      "complexity": "medium",
+      "emphasis_level": "strong"
+    },
+    "supporting": {
+      "annotations": true,
+      "labels": true,
+      "arrows": false,
+      "icons": true
+    },
+    "text": {
+      "font_style": "sans_serif",
+      "size_scale": "medium",
+      "weight": "regular"
+    }
+  }
+}
+```
+
+3. **基础模板示例：概念图**
+```json
+{
+  "template_id": "concept_v1",
+  "name": "基础概念图风格",
+  "description": "通用概念图解风格",
+  "version": "1.0.0",
+  "type": "concept",
+  
+  "style": {
+    "art_style": "minimal",
+    "color_theme": {
+      "primary": ["#2196F3", "#1976D2"],
+      "secondary": ["#4CAF50", "#8BC34A"],
+      "background": ["#FFFFFF", "#F5F5F5"],
+      "emphasis": ["#FF5722", "#FFC107"]
+    },
+    "composition": {
+      "layout": "flow",
+      "perspective": "2d",
+      "depth": "flat"
+    }
+  },
+
+  "elements": {
+    "main": {
+      "style": "minimal",
+      "complexity": "medium",
+      "emphasis_level": "medium"
+    },
+    "supporting": {
+      "annotations": true,
+      "labels": true,
+      "arrows": true,
+      "icons": true
+    },
+    "text": {
+      "font_style": "sans_serif",
+      "size_scale": "medium",
+      "weight": "medium"
+    }
+  }
+}
+```
+
+## 3. 实现细节
+
+### 3.1 服务器架构
+```
+src/
+  ├── index.ts              # 服务入口点
+  ├── tools/               # MCP 工具实现
+  │   ├── index.ts         # 工具注册
+  │   ├── generate.ts      # 图片生成工具
+  │   ├── templates.ts     # 模板管理工具
+  │   └── types.ts         # 工具类型定义
+  ├── services/            # 核心服务
+  │   ├── ai/             # AI 服务集成
+  │   │   ├── index.ts     # 服务管理
+  │   │   └── providers/   # AI 提供商适配器
+  │   └── template/        # 模板服务
+  │       ├── index.ts     # 模板管理
+  │       └── loader.ts    # 模板加载器
+  └── utils/              # 工具函数
+      ├── logger.ts       # 日志工具
+      └── helpers.ts      # 通用辅助函数
+```
+
+### 3.2 核心模块
+
+1. **图片生成模块**
+   - 提示词处理与优化
+   - 模型接口调用
+   - 图片存储管理
+   - 生成结果验证
+
+2. **模板管理模块**
+   - 模板加载与解析
+   - 模板验证
+   - 模板覆盖处理
+
+3. **AI 服务适配模块**
+   - OpenAI 接口适配
+   - 其他模型接口扩展
+   - 模型参数配置
+   - 响应格式统一化
+
+4. **存储管理模块**
+   - 文件系统操作
+   - 文件命名规则
+   - 存储路径管理
+   - 文件覆盖策略
+
+5. **日志与监控模块**
+   - 请求日志记录
+   - 错误日志记录
+   - 性能指标统计
+   - 系统状态监控
+
+6. **错误处理模块**
+   - 错误捕获与分类
+   - 错误信息格式化
+   - 重试策略执行
+   - 错误通知分发
+
+7. **工具类模块**
+   - 配置管理
+   - 通用工具函数
+   - 类型定义
+   - 常量管理
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# 环境变量文件
+.env
+
+# 其他
+.DS_Store
+
+
