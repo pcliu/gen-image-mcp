@@ -31,8 +31,3 @@ dev-debug.log
 *.sw?
 # OS specific
 # Task files
-
-.cursor/
-.roo/
-.windsurfrules
-.roomodes
