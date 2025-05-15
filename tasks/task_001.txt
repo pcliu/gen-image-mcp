@@ -1,0 +1,19 @@
+# Task ID: 1
+# Title: Project Setup and Basic Structure
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Initialize project repository with TypeScript configuration, directory structure, and basic dependencies
+# Details:
+1. Initialize npm project with TypeScript
+2. Set up directory structure as specified in PRD
+3. Install core dependencies: litellm, express/fastify
+4. Configure tsconfig.json and basic build scripts
+5. Setup .env and configuration management
+6. Initialize basic server structure in src/index.ts
+
+# Test Strategy:
+1. Verify project builds successfully
+2. Confirm all directories are created
+3. Test environment variable loading
+4. Validate TypeScript configuration

@@ -2,19 +2,19 @@
   "models": {
     "main": {
       "provider": "openrouter",
-      "modelId": "anthropic/claude-3-sonnet",
+      "modelId": "anthropic/claude-3.5-sonnet",
       "maxTokens": 120000,
       "temperature": 0.2
     },
     "research": {
       "provider": "openrouter",
-      "modelId": "openai/o4-mini",
+      "modelId": "anthropic/claude-3.5-sonnet",
       "maxTokens": 8700,
       "temperature": 0.1
     },
     "fallback": {
       "provider": "openrouter",
-      "modelId": "openai/o4-mini",
+      "modelId": "openai/o4",
       "maxTokens": 120000,
       "temperature": 0.1
     }
