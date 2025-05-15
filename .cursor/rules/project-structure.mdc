@@ -1,0 +1,30 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 项目结构指南
+
+## 核心目录结构
+
+主要源代码位于 `src` 目录下:
+
+- [src/index.ts](mdc:src/index.ts) - 服务入口点
+- [src/tools/index.ts](mdc:src/tools/index.ts) - MCP 工具注册
+- [src/tools/generate.ts](mdc:src/tools/generate.ts) - 图片生成工具实现
+- [src/tools/templates.ts](mdc:src/tools/templates.ts) - 模板管理工具实现
+- [src/tools/types.ts](mdc:src/tools/types.ts) - 工具类型定义
+
+### 服务模块
+
+服务相关代码位于 `src/services`:
+
+- AI 服务集成: [src/services/ai/index.ts](mdc:src/services/ai/index.ts)
+- 模板服务: [src/services/template/index.ts](mdc:src/services/template/index.ts)
+
+### 工具函数
+
+通用工具函数位于 `src/utils`:
+
+- [src/utils/logger.ts](mdc:src/utils/logger.ts) - 日志工具
+- [src/utils/helpers.ts](mdc:src/utils/helpers.ts) - 通用辅助函数

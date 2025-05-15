@@ -1,15 +1,36 @@
-# Node.js
+# Dependencies
 node_modules/
-npm-debug.log
-yarn-error.log
-package-lock.json
-yarn.lock
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# 环境变量文件
-.env
+# Build output
+dist/
+build/
+*.tsbuildinfo
 
-# 其他
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
 .DS_Store
+
+# Test coverage
+coverage/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# 项目特定
+storage/
+*.log
 
 # Added by Claude Task Master
 # Logs
@@ -31,3 +52,7 @@ dev-debug.log
 *.sw?
 # OS specific
 # Task files
+
+# Added by Claude Task Master
+tasks.json
+tasks/ 

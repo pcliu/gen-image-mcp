@@ -20,20 +20,17 @@
 2. **模板管理接口**
    - 获取模板列表：`list_templates`
    - 获取模板详情：`get_template`
-
-3. **提示词增强系统**
-   - GPT-4 提示词重写优化
    - 插图模板定义
    - 概念图模板定义
 
-4. **日志记录**
+3. **日志记录**
    - 记录请求和接口调用的情况
 
-5. **错误处理**
+4. **错误处理**
    - 能够返回友好的错误提示
    - 错误重试机制
 
-### 2.2 接口参数
+### 2.2 工具参数
 1. **generate_image**
 ```json
 {
@@ -299,8 +296,8 @@ graph TD
 
 ### 2.5 技术规范
 1. **API集成**
-   - 使用 litellm 调用模型接口生成图片
-   - 对 Openai的模型接口进行适配
+   - 模型提供商默认为 openrouter
+   - 模式默认为 Openai的openai/chatgpt-4o模型
    - 留有对其他模型接口适配的扩展性
 
 2. **MCP Server 配置**
@@ -315,11 +312,10 @@ graph TD
            "gen-image-mcp",
            "--storage-path=/path/to/images",
            "--provider=openrouter",
-           "--model=anthropic/claude-3-opus"
+           "--model=openai/chatgpt-4o-latest"
          ],
          "env": {
            "OPENROUTER_API_KEY": "your-api-key",
-           "XAI_API_KEY": "your-api-key"
          }
        }
      }
@@ -330,10 +326,6 @@ graph TD
    - 本地文件系统存储
    - 存储路径通过 MCP Server 启动参数配置
    - 图片文件名按照提示词和时间自动生成
-   ```
-   # 存储路径配置示例
-   --storage-path=/path/to/images
-   ```
 
 ### 2.6 统一模板系统
 
@@ -474,7 +466,13 @@ graph TD
 
 ## 3. 实现细节
 
-### 3.1 服务器架构
+### 3.1 注意事项
+
+1. 按照官方的 MCP Server SDK : https://github.com/modelcontextprotocol/typescript-sdk
+2. 不需要创建 API 接口
+3. 不需要config 配置文件，因为在 MCP Server 的 命令中提供了模型和 API KEY 信息
+
+### 3.2 服务器架构
 ```
 src/
   ├── index.ts              # 服务入口点
@@ -495,18 +493,16 @@ src/
       └── helpers.ts      # 通用辅助函数
 ```
 
-### 3.2 核心模块
+### 3.3 核心模块
 
 1. **图片生成模块**
-   - 提示词处理与优化
+   - 提示词生成
    - 模型接口调用
    - 图片存储管理
    - 生成结果验证
 
 2. **模板管理模块**
    - 模板加载与解析
-   - 模板验证
-   - 模板覆盖处理
 
 3. **AI 服务适配模块**
    - OpenAI 接口适配
@@ -533,22 +529,10 @@ src/
    - 错误通知分发
 
 7. **工具类模块**
-   - 配置管理
+   - 配置验证
    - 通用工具函数
    - 类型定义
    - 常量管理
 
-# Node.js
-node_modules/
-npm-debug.log
-yarn-error.log
-package-lock.json
-yarn.lock
-
-# 环境变量文件
-.env
-
-# 其他
-.DS_Store
 
 

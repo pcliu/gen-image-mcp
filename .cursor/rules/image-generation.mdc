@@ -1,0 +1,36 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 图片生成功能指南
+
+## 核心功能
+
+图片生成功能通过 [src/tools/generate.ts](mdc:src/tools/generate.ts) 实现，主要包含:
+
+1. 提示词生成与处理
+2. AI 模型调用
+3. 图片存储管理
+4. 结果验证
+
+## 图片规格
+
+支持的图片尺寸:
+- 1024x1024 (正方形)
+- 1792x1024 (横向)
+- 1024x1792 (纵向)
+
+质量等级:
+- standard: 标准质量
+- hd: 高清质量
+
+风格选项:
+- natural: 自然风格
+- vivid: 生动风格
+
+## 关键依赖
+
+- AI 服务适配: [src/services/ai/index.ts](mdc:src/services/ai/index.ts)
+- 存储管理: [src/utils/helpers.ts](mdc:src/utils/helpers.ts)
+- 错误处理: [src/utils/logger.ts](mdc:src/utils/logger.ts)
