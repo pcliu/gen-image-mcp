@@ -1,18 +1,18 @@
 # Task ID: 4
-# Title: AI Service Integration
+# Title: Image Generation Core
 # Status: pending
-# Dependencies: 2
+# Dependencies: 2, 3
 # Priority: high
-# Description: Implement AI service adapters for image generation using litellm
+# Description: Implement the core image generation functionality with prompt processing
 # Details:
-1. Setup litellm integration
-2. Implement OpenAI adapter
-3. Create provider interface for future extensions
-4. Configure model parameters
-5. Implement retry mechanism
+1. Implement prompt processing pipeline
+2. Create image generation service
+3. Implement size and quality options
+4. Setup response format handling
+5. Implement metadata management
 
 # Test Strategy:
-1. Integration tests with AI providers
-2. Error handling tests
-3. Retry mechanism tests
-4. Response format validation
+1. Unit tests for prompt processing
+2. Integration tests for image generation
+3. Validate different size and quality options
+4. Test metadata handling

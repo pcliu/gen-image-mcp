@@ -1,17 +1,18 @@
 # Task ID: 6
-# Title: Storage System Implementation
+# Title: API Endpoints Implementation
 # Status: pending
-# Dependencies: 5
-# Priority: medium
-# Description: Implement the file storage system for generated images
+# Dependencies: 2, 4
+# Priority: high
+# Description: Implement the three main API endpoints: generate_image, list_templates, and get_template
 # Details:
-1. Implement file system operations
-2. Create naming convention system
-3. Setup storage path management
-4. Implement file cleanup mechanism
+1. Implement generate_image endpoint
+2. Implement list_templates endpoint
+3. Implement get_template endpoint
+4. Setup request validation
+5. Implement response formatting
 
 # Test Strategy:
-1. File storage tests
-2. Naming convention tests
-3. Storage path tests
-4. Cleanup mechanism tests
+1. API endpoint integration tests
+2. Request validation tests
+3. Response format validation
+4. Error handling tests
